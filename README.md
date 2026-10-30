@@ -58,7 +58,41 @@ After boot, copy the receiver utilities once:
 scp scripts/{adc_monitor.py,receiver_control.py,capture_ssb_audio.py,ft8_control.py} root@192.168.1.126:/root/
 ```
 
-Configure simulated USB reception and listen on the Ubuntu PC:
+Test the simulated ADC and DDC path with `adc_monitor` first. The board needs
+Python 3 with NumPy and Matplotlib (`python3-numpy` and `python3-matplotlib`
+packages). Run these commands on the PC to capture one frame per test without
+requiring a graphical display:
+
+**Test 1 — Raw ADC snapshot at 64 MS/s**
+
+```bash
+ssh root@192.168.1.126 'python3 /root/adc_monitor.py --receiver --source simulated --mode raw --sim-frequency 1001000 --save /root/adc-raw.png'
+```
+
+**Test 2 — Tuned I/Q snapshot at 8 ksample/s**
+
+```bash
+ssh root@192.168.1.126 'python3 /root/adc_monitor.py --receiver --source simulated --mode iq --tune 1000000 --sim-frequency 1001000 --save /root/adc-iq.png'
+scp root@192.168.1.126:/root/adc-raw.png root@192.168.1.126:/root/adc-iq.png .
+```
+
+Each test should print `Frame 1` statistics and save a plot without capture or
+format errors. The raw plot should show 4096 samples at 64 MS/s with a signal
+near 1.001 MHz; the I/Q plot should show 4096 pairs at 8 ksample/s with a signal
+near +1 kHz relative to the tuned frequency. The FT8 simulator changes tones
+and includes silence between transmissions, so repeat a capture if it shows
+`No signal`.
+
+**Test 3 — Live I/Q monitor on the HDMI desktop**
+
+For an interactive monitor on the board's HDMI desktop (after starting X), run:
+
+```bash
+ssh root@192.168.1.126 'DISPLAY=:0 python3 /root/adc_monitor.py --receiver --source simulated --mode iq --tune 1000000 --sim-frequency 1001000'
+```
+
+Close the monitor before configuring simulated USB reception and listening on
+the Ubuntu PC:
 
 ```bash
 ssh root@192.168.1.126 'python3 /root/receiver_control.py --source simulated --mode usb --tune 1000000 --sim-frequency 1001000'
