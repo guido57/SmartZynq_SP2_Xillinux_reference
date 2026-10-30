@@ -69,6 +69,11 @@ requiring a graphical display:
 ssh root@192.168.1.126 'python3 /root/adc_monitor.py --receiver --source simulated --mode raw --sim-frequency 1001000 --save /root/adc-raw.png'
 ```
 
+![Test 1 raw ADC capture: waveform, spectrum and signal levels](docs/images/adc-raw.png)
+
+Actual Test 1 output from the board using the simulated ADC: 4096 samples at
+64 MS/s, with the dominant FFT bin at 1.000 MHz (15.625 kHz bin spacing).
+
 **Test 2 — Tuned I/Q snapshot at 8 ksample/s**
 
 ```bash
